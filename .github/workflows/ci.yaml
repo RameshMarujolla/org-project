@@ -1,0 +1,24 @@
+name: Complete CI Workflow
+on:
+  push:
+    branches:
+      - stage
+      - prod
+  pull_request:
+    branches:
+      - stage
+      - prod
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print event
+        run: |
+          echo "workflow triggered by event: ${{ github.event_name }}"
+          echo "workflow triggered by action: ${{ github.event.action }}"
