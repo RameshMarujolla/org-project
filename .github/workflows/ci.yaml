@@ -13,6 +13,10 @@ on:
       - synchronize
       - reopened
 
+concurrency:
+  group: my-ci-workflow-${{ github.ref_name }}
+  cancel-in-progress: true
+
 
 jobs:
   test:
@@ -22,3 +26,10 @@ jobs:
         run: |
           echo "workflow triggered by event: ${{ github.event_name }}"
           echo "workflow triggered by action: ${{ github.event.action }}"
+          echo "Started at: $(date)"
+
+      - name: Wait for 120 seconds
+        run: sleep 120
+
+      - name: end
+        run: echo "Workflow completed at: $(date)"
