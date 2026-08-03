@@ -15,7 +15,7 @@ on:
 
 concurrency:
   group: my-ci-workflow-${{ github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 
 jobs:
