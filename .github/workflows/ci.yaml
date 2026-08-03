@@ -14,24 +14,27 @@ on:
       - reopened
 
 concurrency:
-  group: my-ci-workflow-${{ github.ref_name }}
-  cancel-in-progress: false
-
+  group: my-ci-workflow-${{ github.ref_name }}.
 
 jobs:
-  test:
+   get-environment:
+    name: Get Environment name
     runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.get-environment-name.outputs.value }}
     steps:
-      - name: print event
-        run: |
-          echo "workflow triggered by eventss: ${{ github.event_name }}"
-          echo "workflow triggered by actionss: ${{ github.event.action }}"
-          echo "workflow triggered by refss: ${{ github.ref_name }}"
-          echo "Started at: $(date)"
-
-      - name: Wait for 120 seconds
-        run: sleep 120
-
-      - name: end
-        run: |
-          echo "Workflow completed at: $(date)"
+      - name: 
+        id: get-environment-name
+        uses: haya14busa/action-cond@v1
+        with:
+           cond: ${{ github.event_name == 'pull_request'}}
+           if_true: ${{ github.base_ref }}
+           if_false: ${{ github.ref_name }} 
+        # run: |
+        #   if [[ "${{ github.ref_name }}" == "stage" ]]; then
+        #     echo "environment=staging" >> $GITHUB_OUTPUT
+        #   elif [[ "${{ github.ref_name }}" == "prod" ]]; then
+        #     echo "environment=production" >> $GITHUB_OUTPUT
+        #   else
+        #     echo "environment=unknown" >> $GITHUB_OUTPUT
+        #   fi
