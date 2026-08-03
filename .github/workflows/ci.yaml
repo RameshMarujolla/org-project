@@ -26,6 +26,7 @@ jobs:
         run: |
           echo "workflow triggered by eventss: ${{ github.event_name }}"
           echo "workflow triggered by actionss: ${{ github.event.action }}"
+          echo "workflow triggered by refss: ${{ github.ref_name }}"
           echo "Started at: $(date)"
 
       - name: Wait for 120 seconds
