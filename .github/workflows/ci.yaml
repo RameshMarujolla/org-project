@@ -32,4 +32,5 @@ jobs:
         run: sleep 120
 
       - name: end
-        run: echo "Workflow completed at: $(date)"
+        run: |
+          echo "Workflow completed at: $(date)"
