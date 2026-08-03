@@ -24,8 +24,8 @@ jobs:
     steps:
       - name: print event
         run: |
-          echo "workflow triggered by event: ${{ github.event_name }}"
-          echo "workflow triggered by action: ${{ github.event.action }}"
+          echo "workflow triggered by events: ${{ github.event_name }}"
+          echo "workflow triggered by actions: ${{ github.event.action }}"
           echo "Started at: $(date)"
 
       - name: Wait for 120 seconds
