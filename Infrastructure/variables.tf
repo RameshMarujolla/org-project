@@ -13,8 +13,9 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "subnets" {
-  description = "List of subnets"
+variable "public_subnets" {
+  description = "Public subnets"
+
   type = list(object({
     name              = string
     cidr_block        = string
@@ -22,6 +23,15 @@ variable "subnets" {
   }))
 }
 
+variable "private_subnets" {
+  description = "Private subnets"
+
+  type = list(object({
+    name              = string
+    cidr_block        = string
+    availability_zone = string
+  }))
+}
 
 variable "cluster_name" {
   description = "The name of the Kubernetes Cluster"
