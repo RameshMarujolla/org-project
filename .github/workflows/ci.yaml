@@ -53,7 +53,7 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Terraform Plan
+      - name: Terraform Plan execution
         run: |
            terraform plan \
              -var-file=Infrastructure/environments/${{ github.base_ref }}.tfvars \
