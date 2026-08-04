@@ -13,7 +13,7 @@ locals {
 ####################################
 # VPC
 ####################################
-
+#checkov:skip=CKV2_AWS_11:VPC flow logs are not enabled currently by design
 resource "aws_vpc" "this" {
 
   cidr_block           = var.cidr_block
