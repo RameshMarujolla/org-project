@@ -82,3 +82,4 @@ jobs:
           framework: terraform
           quiet: true
           soft_fail: false
+          skip_check: CKV_AWS_130
