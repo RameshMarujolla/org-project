@@ -56,5 +56,5 @@ jobs:
       - name: Terraform Plan execution
         run: |
            terraform plan \
-             -var-file=Infrastructure/environments/${{ github.base_ref }}.tfvars \
+             -var-file=Infrastructure/environments/${{ github.base_ref }}/${{ github.base_ref }}.tfvars \
              -out=tfplan
