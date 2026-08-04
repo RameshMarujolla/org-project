@@ -25,6 +25,10 @@ jobs:
     name: Terraform Validation
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+         working-directory: ./Infrastructure
+
     env:
       TF_IN_AUTOMATION: true
 
