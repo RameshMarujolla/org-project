@@ -1,17 +1,17 @@
 name: Complete CI Workflow
-on:
-  push:
-    branches:
-      - stage
-      - prod
-  pull_request:
-    branches:
-      - stage
-      - prod
-    types:
-      - opened
-      - synchronize
-      - reopened
+# on:
+#   push:
+#     branches:
+#       - stage
+#       - prod
+#   pull_request:
+#     branches:
+#       - stage
+#       - prod
+#     types:
+#       - opened
+#       - synchronize
+#       - reopened
 
 concurrency:
   group: my-ci-workflow-${{ github.ref_name }}. # if PR, this will be the PR branch name like feature --> stage --- ref_name would be the stage; if push, this will be the branch name  cancel-in-progress: false

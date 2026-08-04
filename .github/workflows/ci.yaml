@@ -1,51 +1,60 @@
-name: Complete CI Workflow
+name: Pull Request Validation
+
 on:
-  push:
-    branches:
-      - stage
-      - prod
   pull_request:
     branches:
+      - dev
       - stage
       - prod
     types:
       - opened
       - synchronize
       - reopened
+      - ready_for_review
+
+permissions:
+  contents: read
+  pull-requests: read
 
 concurrency:
-  group: my-ci-workflow-${{ github.ref_name }}.
+  group: pr-${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
-   get-environment:
-    name: Get Environment name
+  terraform-validation:
+    name: Terraform Validation
     runs-on: ubuntu-latest
-    outputs:
-      name: ${{ steps.get-environment-name.outputs.environment }}
+
+    env:
+      TF_IN_AUTOMATION: true
+
     steps:
-      - name:  Get environment name
-        id: get-environment-name
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Display GitHub Context
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "environment=${{ github.base_ref }}" >> $GITHUB_OUTPUT
-          else
-            echo "environment=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
+          echo "Event Name : ${{ github.event_name }}"
+          echo "Action     : ${{ github.event.action }}"
+          echo "Source     : ${{ github.head_ref }}"
+          echo "Target     : ${{ github.base_ref }}"
 
-      # - name: 
-      #   id: get-environment-name
-      #   uses: haya14busa/action-cond@v1
-      #   with:
-      #      cond: ${{ github.event_name == 'pull_request'}}
-      #      if_true: ${{ github.base_ref }}
-      #      if_false: ${{ github.ref_name }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.0
 
-        #if condition is true,  then the output value will be the base_ref of the PR. that is, github.base_ref is the target branch of the pull request. ex: feature ---> stage ---> github.base_ref would be stage. if condition is false, then the output value will be the branch name of the push event. ex: feature ---> stage ---> github.ref_name would be stage.
-        # run: |
-        #   if [[ "${{ github.ref_name }}" == "stage" ]]; then
-        #     echo "environment=staging" >> $GITHUB_OUTPUT
-        #   elif [[ "${{ github.ref_name }}" == "prod" ]]; then
-        #     echo "environment=production" >> $GITHUB_OUTPUT
-        #   else
-        #     echo "environment=unknown" >> $GITHUB_OUTPUT
-        #   fi
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: |
+           terraform plan \
+             -var-file=Infrastructure/environments/${{ github.base_ref }}.tfvars \
+             -out=tfplan
