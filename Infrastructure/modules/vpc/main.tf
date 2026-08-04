@@ -13,8 +13,9 @@ locals {
 ####################################
 # VPC
 ####################################
-#checkov:skip=CKV2_AWS_11:VPC flow logs are not enabled currently by design
 resource "aws_vpc" "this" {
+  #checkov:skip=CKV2_AWS_11:VPC flow logs intentionally disabled for now
+  #checkov:skip=CKV2_AWS_12:Default security group managed separately
 
   cidr_block           = var.cidr_block
   enable_dns_support   = true
