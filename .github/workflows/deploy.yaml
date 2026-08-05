@@ -35,7 +35,7 @@ jobs:
       - name: Set Deployment Variables
         id: vars
         run: |
-          echo "TFVARS_FILE=environments/${GITHUB_REF_NAME}.tfvars" >> $GITHUB_ENV
+          echo "TFVARS_FILE=environments/${GITHUB_REF_NAME}/${GITHUB_REF_NAME}.tfvars" >> $GITHUB_ENV
 
       - name: Decode GitHub OIDC Token
         run: |
