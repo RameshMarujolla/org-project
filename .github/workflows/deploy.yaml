@@ -1,0 +1,61 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches:
+      - dev
+      - stage
+      - prod
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment: ${{ github.ref_name }}
+
+    defaults:
+      run:
+        working-directory: ./Infrastructure
+
+    env:
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Deployment Variables
+        id: vars
+        run: |
+          echo "TFVARS_FILE=environments/${GITHUB_REF_NAME}.tfvars" >> $GITHUB_ENV
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.0
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -var-file=$TFVARS_FILE -out=tfplan
+
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve tfplan
