@@ -27,3 +27,5 @@ private_subnets = [
     availability_zone = "us-east-1b"
   }
 ]
+
+cluster_name = "demo-eks"
