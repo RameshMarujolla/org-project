@@ -45,6 +45,13 @@ jobs:
                echo "AWS_ROLE_ARN is available"
            fi
 
+      - name: Debug GitHub Context
+        run: |
+          echo "Repository : ${{ github.repository }}"
+          echo "Ref        : ${{ github.ref }}"
+          echo "Ref Name   : ${{ github.ref_name }}"
+          echo "Actor      : ${{ github.actor }}"
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
