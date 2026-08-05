@@ -32,25 +32,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set Deployment Variables for verify
+      - name: Set Deployment Variables
         id: vars
         run: |
           echo "TFVARS_FILE=environments/${GITHUB_REF_NAME}.tfvars" >> $GITHUB_ENV
-      - name: Check secret exists
-        run: |
-           if [ -z "${{ secrets.AWS_ROLE_ARN }}" ]; then
-               echo "AWS_ROLE_ARN is EMPTY"
-               exit 1
-           else
-               echo "AWS_ROLE_ARN is available"
-           fi
 
-      - name: Debug GitHub Context
+      - name: Request GitHub OIDC token
         run: |
-          echo "Repository : ${{ github.repository }}"
-          echo "Ref        : ${{ github.ref }}"
-          echo "Ref Name   : ${{ github.ref_name }}"
-          echo "Actor      : ${{ github.actor }}"
+         echo "OIDC URL: $ACTIONS_ID_TOKEN_REQUEST_URL"
+         echo "Token Available: ${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+YES}"
+
+         curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
