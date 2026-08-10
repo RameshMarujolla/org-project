@@ -82,4 +82,5 @@ jobs:
       - name: Terraform Apply
         run: |
           terraform destroy \
+            -var-file="$TFVARS_FILE" 
             -auto-approve \
