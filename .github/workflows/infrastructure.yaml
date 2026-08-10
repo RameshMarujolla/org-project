@@ -79,8 +79,8 @@ jobs:
             tfplan
 
 
-      - name: Terraform Apply
+      - name: Terraform destory
         run: |
           terraform destroy \
-            -var-file="$TFVARS_FILE" 
+            -var-file="$TFVARS_FILE" \
             -auto-approve \
