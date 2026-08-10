@@ -1,0 +1,36 @@
+name: Complete CI Workflow
+# on:
+#   push:
+#     branches:
+#       - stage
+#       - prod
+#   pull_request:
+#     branches:
+#       - stage
+#       - prod
+#     types:
+#       - opened
+#       - synchronize
+#       - reopened
+
+concurrency:
+  group: my-ci-workflow-${{ github.ref_name }}. # if PR, this will be the PR branch name like feature --> stage --- ref_name would be the stage; if push, this will be the branch name  cancel-in-progress: false
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print event
+        run: |
+          echo "workflow triggered by eventss: ${{ github.event_name }}"
+          echo "workflow triggered by actionss: ${{ github.event.action }}"
+          echo "workflow triggered by refss: ${{ github.ref_name }}"
+          echo "Started at: $(date)"
+
+      - name: Wait for 120 seconds
+        run: sleep 120
+
+      - name: end
+        run: |
+          echo "Workflow completed at: $(date)"
