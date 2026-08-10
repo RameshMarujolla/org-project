@@ -8,7 +8,6 @@ on:
       - prod
 
 permissions:
-  id-token: write
   contents: read
 
 concurrency:
@@ -17,60 +16,16 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    name: Deploy ${{ github.ref_name }}
 
-    environment: ${{ github.ref_name }}
+    uses: ./.github/workflows/infrastructure.yaml
 
-    defaults:
-      run:
-        working-directory: ./Infrastructure
+    with:
+      environment: ${{ github.ref_name }}
 
-    env:
-      TF_IN_AUTOMATION: true
+      tfvars_file: environments/${{ github.ref_name }}/${{ github.ref_name }}.tfvars
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      backend_config: environments/${{ github.ref_name }}/backend.hcl
 
-      - name: Set Deployment Variables
-        id: vars
-        run: |
-          echo "TFVARS_FILE=environments/${GITHUB_REF_NAME}/${GITHUB_REF_NAME}.tfvars" >> $GITHUB_ENV
-
-      - name: Decode GitHub OIDC Token
-        run: |
-          TOKEN=$(curl -s \
-            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" \
-            | jq -r '.value')
-
-          echo "$TOKEN" | cut -d '.' -f2 | base64 -d 2>/dev/null | jq .
-
-      - name: Verify role
-        run: |
-          echo "Role: ${{ secrets.AWS_ROLE_ARN }}"
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.13.0
-
-      - name: Terraform Init
-        run: |
-          terraform init \
-            -backend-config="environments/${GITHUB_REF_NAME}/backend.hcl"
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan -var-file=$TFVARS_FILE -out=tfplan
-
-      # - name: Terraform Apply
-      #   run: terraform apply -auto-approve tfplan
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
