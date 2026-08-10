@@ -77,3 +77,10 @@ jobs:
           terraform apply \
             -auto-approve \
             tfplan
+
+
+      - name: Terraform Apply
+        run: |
+          terraform destroy \
+            -auto-approve \
+            tfplan
